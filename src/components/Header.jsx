@@ -1,0 +1,26 @@
+import styles from './Header.module.css'
+
+export default function Header({ tab, setTab }) {
+  return (
+    <header className={styles.header}>
+      <div className={styles.logo}>
+        <div className={styles.dot} />
+        <span className={styles.name}>FinFreela</span>
+      </div>
+      <nav className={styles.nav}>
+        <button
+          className={`${styles.btn} ${tab === 'dashboard' ? styles.active : ''}`}
+          onClick={() => setTab('dashboard')}
+        >
+          Dashboard
+        </button>
+        <button
+          className={`${styles.btn} ${tab === 'simulador' ? styles.active : ''}`}
+          onClick={() => setTab('simulador')}
+        >
+          Simulador
+        </button>
+      </nav>
+    </header>
+  )
+}
