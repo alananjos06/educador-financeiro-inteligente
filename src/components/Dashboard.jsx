@@ -133,7 +133,7 @@ function exportToCSV() {
           <div className={styles.formRow}>
             <div className={styles.field}>
               <label>Descrição</label>
-              <input value={form.desc} onChange={e => handleChange('desc', e.target.value)} placeholder="ex: Projeto cliente X" />
+              <input value={form.desc} onChange={e => handleChange('desc', e.target.value)} placeholder="ex: 1700" />
             </div>
             <div className={styles.field}>
               <label>Tipo</label>
