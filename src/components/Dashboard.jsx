@@ -114,7 +114,7 @@ function exportToCSV() {
 
       <div className={styles.statsGrid}>
         {[
-          { label: 'Receita bruta', value: fmt(totalIn), cls: 'positive', sub: `${filterMonth} 2025` },
+          { label: 'Receita bruta', value: fmt(totalIn), cls: 'positive', sub: `${filterMonth} ${new Date().getFullYear()}` },
           { label: 'Despesas', value: fmt(totalOut), cls: 'negative', sub: `${filtered.filter(e => e.type === 'saída').length} lançamentos` },
           { label: 'Saldo líquido', value: fmt(balance), cls: balance >= 0 ? 'positive' : 'negative', sub: balance >= 0 ? '✓ positivo' : '⚠ negativo' },
           { label: 'Pró-labore sugerido', value: fmt(proLabore), cls: 'accent', sub: '40% da receita' },
