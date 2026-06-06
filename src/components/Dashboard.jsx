@@ -12,6 +12,7 @@ export default function Dashboard() {
   const [filterMonth, setFilterMonth] = useState('Mai')
   const [editingId, setEditingId] = useState(null)
   const [editForm, setEditForm] = useState({ desc: '', value: '' })
+  const CATEGORIES = ['Projeto', 'Fixo', 'Operacional', 'Marketing', 'Educação', 'Saúde', 'Alimentação', 'Transporte', 'Outros']
 
   const filtered = useMemo(() => getByMonth(filterMonth), [entries, filterMonth])
   const { totalIn, totalOut, balance } = useMemo(() => calcTotals(filtered), [filtered])
@@ -128,34 +129,40 @@ function exportToCSV() {
       </div>
 
       <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>Novo lançamento</h2>
-        <div className={styles.card}>
-          <div className={styles.formRow}>
-            <div className={styles.field}>
-              <label>Descrição</label>
-              <input value={form.desc} onChange={e => handleChange('desc', e.target.value)} placeholder="ex: 1700" />
-            </div>
-            <div className={styles.field}>
-              <label>Tipo</label>
-              <select value={form.type} onChange={e => handleChange('type', e.target.value)}>
-                <option value="entrada">Entrada</option>
-                <option value="saída">Saída</option>
-              </select>
-            </div>
-            <div className={styles.field}>
-              <label>Valor (R$)</label>
-              <input type="number" value={form.value} onChange={e => handleChange('value', e.target.value)} placeholder="0,00" />
-            </div>
-            <div className={styles.field}>
-              <label>Mês</label>
-              <select value={form.month} onChange={e => handleChange('month', e.target.value)}>
-                {MONTHS.map(m => <option key={m}>{m}</option>)}
-              </select>
-            </div>
-          </div>
-          <button className={styles.btnAccent} onClick={handleAdd}>+ Adicionar</button>
-        </div>
-      </section>
+  <h2 className={styles.sectionTitle}>Novo lançamento</h2>
+  <div className={styles.card}>
+    <div className={styles.formRow}>
+      <div className={styles.field}>
+        <label>Descrição</label>
+        <input value={form.desc} onChange={e => handleChange('desc', e.target.value)} placeholder="ex: Projeto cliente X" />
+      </div>
+      <div className={styles.field}>
+        <label>Tipo</label>
+        <select value={form.type} onChange={e => handleChange('type', e.target.value)}>
+          <option value="entrada">Entrada</option>
+          <option value="saída">Saída</option>
+        </select>
+      </div>
+      <div className={styles.field}>
+        <label>Valor (R$)</label>
+        <input type="number" value={form.value} onChange={e => handleChange('value', e.target.value)} placeholder="0,00" />
+      </div>
+      <div className={styles.field}>
+        <label>Mês</label>
+        <select value={form.month} onChange={e => handleChange('month', e.target.value)}>
+          {MONTHS.map(m => <option key={m}>{m}</option>)}
+        </select>
+      </div>
+      <div className={styles.field}>
+        <label>Categoria</label>
+        <select value={form.category} onChange={e => handleChange('category', e.target.value)}>
+          {CATEGORIES.map(cat => <option key={cat}>{cat}</option>)}
+        </select>
+      </div>
+    </div>
+    <button className={styles.btnAccent} onClick={handleAdd}>+ Adicionar</button>
+  </div>
+</section>
 
       <section className={styles.section}>
   <div className={styles.sectionHeader}>

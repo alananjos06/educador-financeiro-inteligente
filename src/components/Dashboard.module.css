@@ -149,3 +149,10 @@ tr:hover td { background: var(--surface2); }
   border-color: var(--accent);
   transform: translateY(-1px);
 }
+
+.formRow { 
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 12px;
+}
