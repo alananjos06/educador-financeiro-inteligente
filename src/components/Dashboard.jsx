@@ -7,9 +7,11 @@ import styles from './Dashboard.module.css'
 const EMPTY_FORM = { desc: '', type: 'entrada', value: '', month: 'Mai', category: 'Projeto' }
 
 export default function Dashboard() {
-  const { entries, addEntry, removeEntry, getByMonth, getUsedMonths } = useEntries()
+  const { entries, addEntry, removeEntry, updateEntry, getByMonth, getUsedMonths } = useEntries()
   const [form, setForm] = useState(EMPTY_FORM)
   const [filterMonth, setFilterMonth] = useState('Mai')
+  const [editingId, setEditingId] = useState(null)
+  const [editForm, setEditForm] = useState({ desc: '', value: '' })
 
   const filtered = useMemo(() => getByMonth(filterMonth), [entries, filterMonth])
   const { totalIn, totalOut, balance } = useMemo(() => calcTotals(filtered), [filtered])
@@ -35,6 +37,57 @@ export default function Dashboard() {
     setForm(EMPTY_FORM)
   }
 
+  function startEdit(entry) {
+  setEditingId(entry.id)
+  setEditForm({ desc: entry.desc, value: entry.value })
+}
+
+function cancelEdit() {
+  setEditingId(null)
+  setEditForm({ desc: '', value: '' })
+}
+
+function saveEdit(id) {
+  if (!editForm.desc.trim() || !editForm.value) return
+  updateEntry(id, { 
+    desc: editForm.desc, 
+    value: parseFloat(editForm.value) 
+  })
+  cancelEdit()
+}
+
+function exportToCSV() {
+  // Prepara os dados para o CSV
+  const headers = ['Descrição', 'Tipo', 'Valor (R$)', 'Mês', 'Categoria']
+  
+  const rows = entries.map(entry => [
+    entry.desc,
+    entry.type === 'entrada' ? 'Entrada' : 'Saída',
+    entry.value.toFixed(2).replace('.', ','),
+    entry.month,
+    entry.category
+  ])
+  
+  // Converte para formato CSV
+  const csvContent = [
+    headers.join(','),
+    ...rows.map(row => row.join(','))
+  ].join('\n')
+  
+  // Adiciona BOM para acentos funcionarem no Excel
+  const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' })
+  
+  // Cria link para download
+  const link = document.createElement('a')
+  const url = URL.createObjectURL(blob)
+  link.href = url
+  link.setAttribute('download', `finfreela_${new Date().toISOString().slice(0,10)}.csv`)
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+  URL.revokeObjectURL(url)
+}
+
   function handleChange(field, value) {
     setForm(prev => ({ ...prev, [field]: value }))
   }
@@ -45,7 +98,7 @@ export default function Dashboard() {
         <p className={styles.tag}>// dashboard financeiro</p>
         <h1 className={styles.title}>Suas finanças,<br /><span>sob controle.</span></h1>
         <p className={styles.sub}>Registre entradas e saídas e acompanhe sua saúde financeira mês a mês.</p>
-      </div>
+    </div>
 
       <div className={styles.monthSelector}>
         {MONTHS.filter(m => usedMonths.includes(m)).map(m => (
@@ -105,40 +158,79 @@ export default function Dashboard() {
       </section>
 
       <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>Lançamentos — {filterMonth}</h2>
-        <div className={styles.card}>
-          {filtered.length === 0 ? (
-            <div className={styles.empty}>
-              <span>📭</span>
-              <p>Nenhum lançamento em {filterMonth}.</p>
-            </div>
-          ) : (
-            <div className={styles.tableWrap}>
-              <table>
-                <thead>
-                  <tr>
-                    <th>Descrição</th><th>Tipo</th><th>Categoria</th><th>Valor</th><th></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filtered.map(e => (
-                    <tr key={e.id}>
-                      <td>{e.desc}</td>
-                      <td>
-                        <span className={`${styles.badge} ${e.type === 'entrada' ? styles.badgeIn : styles.badgeOut}`}>
-                          {e.type}
-                        </span>
-                      </td>
-                      <td className={styles.muted}>{e.category}</td>
-                      <td style={{ color: e.type === 'entrada' ? 'var(--success)' : 'var(--danger)' }}>
-                        {e.type === 'entrada' ? '+' : '-'}{fmt(e.value)}
-                      </td>
-                      <td>
-                        <button className={styles.btnRemove} onClick={() => removeEntry(e.id)}>×</button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
+  <div className={styles.sectionHeader}>
+    <h2 className={styles.sectionTitle}>Lançamentos — {filterMonth}</h2>
+    <button className={styles.btnExport} onClick={exportToCSV}>
+      📥 Exportar CSV
+    </button>
+  </div>
+  <div className={styles.card}>
+    {filtered.length === 0 ? (
+      <div className={styles.empty}>
+        <span>📭</span>
+        <p>Nenhum lançamento em {filterMonth}.</p>
+      </div>
+    ) : (
+      <div className={styles.tableWrap}>
+        <table>
+          <thead>
+            <tr>
+              <th>Descrição</th>
+              <th>Tipo</th>
+              <th>Categoria</th>
+              <th>Valor</th>
+              <th></th>
+            </tr>
+          </thead>
+  <tbody>
+    {filtered.map(e => (
+    <tr key={e.id}>
+      <td>
+        {editingId === e.id ? (
+          <input 
+            value={editForm.desc} 
+            onChange={e => setEditForm({ ...editForm, desc: e.target.value })}
+            className={styles.editInput}
+          />
+        ) : (
+          e.desc
+        )}
+      </td>
+      <td>
+        <span className={`${styles.badge} ${e.type === 'entrada' ? styles.badgeIn : styles.badgeOut}`}>
+          {e.type}
+        </span>
+      </td>
+      <td className={styles.muted}>{e.category}</td>
+      <td style={{ color: e.type === 'entrada' ? 'var(--success)' : 'var(--danger)' }}>
+        {editingId === e.id ? (
+          <input 
+            type="number"
+            value={editForm.value} 
+            onChange={e => setEditForm({ ...editForm, value: e.target.value })}
+            className={styles.editInput}
+            style={{ width: '100px' }}
+          />
+        ) : (
+          `${e.type === 'entrada' ? '+' : '-'}${fmt(e.value)}`
+        )}
+      </td>
+      <td>
+        {editingId === e.id ? (
+          <>
+            <button className={styles.btnSave} onClick={() => saveEdit(e.id)}>✓</button>
+            <button className={styles.btnCancel} onClick={cancelEdit}>✗</button>
+          </>
+        ) : (
+          <>
+            <button className={styles.btnEdit} onClick={() => startEdit(e)}>✏️</button>
+            <button className={styles.btnRemove} onClick={() => removeEntry(e.id)}>×</button>
+          </>
+        )}
+      </td>
+    </tr>
+  ))}
+</tbody>
               </table>
             </div>
           )}

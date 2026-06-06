@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react' 
 
 const SAMPLE_DATA = [
   { id: 1, desc: 'Projeto Website', type: 'entrada', value: 4500, month: 'Sep', category: 'Projeto' },
@@ -12,7 +12,15 @@ const SAMPLE_DATA = [
 ]
 
 export function useEntries() {
-  const [entries, setEntries] = useState(SAMPLE_DATA)
+  const [entries, setEntries] = useState(() => {
+    const saved = localStorage.getItem('finfreela_entries')
+    return saved ? JSON.parse(saved) : SAMPLE_DATA
+  })
+
+  // Salva no localStorage sempre que o entries mudar
+  useEffect(() => {
+    localStorage.setItem('finfreela_entries', JSON.stringify(entries))
+  }, [entries])
 
   function addEntry(entry) {
     setEntries(prev => [...prev, { ...entry, id: Date.now() }])
@@ -20,6 +28,13 @@ export function useEntries() {
 
   function removeEntry(id) {
     setEntries(prev => prev.filter(e => e.id !== id))
+  }
+
+  // atualiza um lançamento já existente
+  function updateEntry(id, updatedData) {
+    setEntries(prev => prev.map(entry => 
+      entry.id === id ? { ...entry, ...updatedData } : entry
+    ))
   }
 
   function getByMonth(month) {
@@ -30,5 +45,5 @@ export function useEntries() {
     return [...new Set(entries.map(e => e.month))]
   }
 
-  return { entries, addEntry, removeEntry, getByMonth, getUsedMonths }
+  return { entries, addEntry, removeEntry, updateEntry, getByMonth, getUsedMonths }
 }

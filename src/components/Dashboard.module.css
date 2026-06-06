@@ -66,3 +66,86 @@ tr:hover td { background: var(--surface2); }
 @media (max-width: 640px) {
   .formRow { grid-template-columns: 1fr 1fr; }
 }
+
+.btnEdit {
+  padding: 4px 8px;
+  background: transparent;
+  color: var(--accent);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+  margin-right: 4px;
+  font-size: 12px;
+}
+
+.btnEdit:hover {
+  background: rgba(200,255,0,0.1);
+  border-color: var(--accent);
+}
+
+.btnSave {
+  padding: 4px 8px;
+  background: var(--success);
+  color: #000;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-right: 4px;
+  font-weight: bold;
+}
+
+.btnCancel {
+  padding: 4px 8px;
+  background: var(--danger);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.editInput {
+  background: var(--surface2);
+  border: 1px solid var(--accent);
+  border-radius: 4px;
+  padding: 4px 8px;
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 12px;
+  width: 100%;
+}
+
+.editInput:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.btnExport {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--accent);
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btnExport:hover {
+  background: rgba(200, 255, 0, 0.1);
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
