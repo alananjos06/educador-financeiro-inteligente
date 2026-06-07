@@ -1,10 +1,15 @@
 <div align="center">
 
+<img src="./badge-finfreela.jpg" alt="FinFreela Banner" width="100%"/>
+
 # 💼 FinFreela — Educador Financeiro Inteligente
 
 ![React](https://img.shields.io/badge/React-18.3-61DAFB?logo=react)
 ![Vite](https://img.shields.io/badge/Vite-5.4-646CFF?logo=vite)
+![JavaScript](https://img.shields.io/badge/JavaScript-ES6-F7DF1E?logo=javascript&logoColor=black)
+![CSS3](https://img.shields.io/badge/CSS3-Modules-1572B6?logo=css3&logoColor=white)
 ![Status](https://img.shields.io/badge/status-online-brightgreen)
+![GitHub Pages](https://img.shields.io/badge/GitHub-Pages-222222?logo=githubpages&logoColor=white)
 
 **🔗 [Ver demonstração ao vivo](https://alananjos06.github.io/educador-financeiro-inteligente/)**
 
@@ -47,11 +52,16 @@ O **FinFreela** é uma aplicação React voltada para freelancers e pequenos emp
 
 ## Tecnologias Utilizadas:
 
-- **React 18** — componentização e hooks 
-- **Vite** — bundler e servidor de desenvolvimento
-- **Recharts** — gráficos interativos
-- **CSS Modules** — estilização isolada por componente
+| Tecnologia | Descrição |
+|------------|-----------|
+| **React 18** | Componentização e hooks (useState, useMemo, useEffect) |
+| **Vite** | Bundler e servidor de desenvolvimento |
+| **Recharts** | Gráficos interativos |
+| **CSS Modules** | Estilização isolada por componente |
+| **LocalStorage** | Persistência de dados local |
+| **GitHub Pages** | Hospedagem do site |
 
+---
 
 ## Estrutura do projeto:
 ```bash
@@ -68,6 +78,25 @@ src/
 └── utils.js ← formatação e cálculos
 ```
 ---
+
+## 🚀 Como rodar localmente
+
+```bash
+# Clone o repositório
+git clone https://github.com/alananjos06/educador-financeiro-inteligente.git
+
+# Acesse a pasta
+cd educador-financeiro-inteligente
+
+# Instale as dependências
+npm install
+
+# Inicie o servidor de desenvolvimento
+npm run dev
+
+# Build para produção
+npm run build
+```
 📦 Deploy:<br>
 O projeto está hospedado no GitHub Pages e é atualizado automaticamente via push na branch main.
 
