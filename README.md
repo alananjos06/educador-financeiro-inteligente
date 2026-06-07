@@ -107,8 +107,4 @@ git commit -m "deploy: nova versão"
 git push origin main
 ```
 ---
-
-📝 Licença:<br>
-Projeto desenvolvido como parte de um desafio do Bootcamp Santander 2026 AI React Front-End da DIO.
-
 <div align="center"> Criado com 💚 por Alana Anjos · React + Vite · Bootcamp Santander 2026 </div>
