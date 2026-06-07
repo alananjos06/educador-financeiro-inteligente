@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react'
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from 'recharts'
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend, PieChart, Pie, Cell } from 'recharts'
 import { useEntries } from '../hooks/useEntries.js'
 import { MONTHS, fmt, calcTotals } from '../utils.js'
 import styles from './Dashboard.module.css'
@@ -13,10 +13,16 @@ export default function Dashboard() {
   const [editingId, setEditingId] = useState(null)
   const [editForm, setEditForm] = useState({ desc: '', value: '' })
   const CATEGORIES = ['Projeto', 'Fixo', 'Operacional', 'Marketing', 'Educação', 'Saúde', 'Alimentação', 'Transporte', 'Outros']
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' })
 
   const filtered = useMemo(() => getByMonth(filterMonth), [entries, filterMonth])
+
   const { totalIn, totalOut, balance } = useMemo(() => calcTotals(filtered), [filtered])
   const usedMonths = getUsedMonths()
+  const sortedEntries = useMemo(() => 
+  sortEntries(filtered, sortConfig), 
+  [filtered, sortConfig]
+)
 
   const proLabore = totalIn * 0.4
   const impostos = totalIn * 0.15
@@ -31,6 +37,19 @@ export default function Dashboard() {
         Saídas: mes.filter(e => e.type === 'saída').reduce((s, e) => s + e.value, 0),
       }
     }), [entries])
+
+  const categoryData = useMemo(() => {
+  const categories = {}
+  filtered.forEach(entry => {
+    if (entry.type === 'saída') {
+      categories[entry.category] = (categories[entry.category] || 0) + entry.value
+    }
+  })
+  return Object.entries(categories).map(([name, value]) => ({ name, value }))
+}, [filtered])
+
+// Cores para cada fatia da pizza
+const COLORS = ['#c8ff00', '#ff6b35', '#7c6cff', '#00e5a0', '#ff4545', '#ffaa00', '#00b4d8', '#9b59b6', '#e83e8c']
 
   function handleAdd() {
     if (!form.desc || !form.value) return
@@ -92,6 +111,33 @@ function exportToCSV() {
   function handleChange(field, value) {
     setForm(prev => ({ ...prev, [field]: value }))
   }
+
+  function sortEntries(entries, sortConfig) {
+  if (!sortConfig.key) return entries
+  
+  const sorted = [...entries].sort((a, b) => {
+    let aValue = a[sortConfig.key]
+    let bValue = b[sortConfig.key]
+    
+    if (sortConfig.key === 'value') {
+      aValue = Number(aValue)
+      bValue = Number(bValue)
+    }
+    
+    if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1
+    if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1
+    return 0
+  })
+  return sorted
+}
+
+function requestSort(key) {
+  let direction = 'asc'
+  if (sortConfig.key === key && sortConfig.direction === 'asc') {
+    direction = 'desc'
+  }
+  setSortConfig({ key, direction })
+}
 
   return (
     <div>
@@ -181,16 +227,22 @@ function exportToCSV() {
       <div className={styles.tableWrap}>
         <table>
           <thead>
-            <tr>
-              <th>Descrição</th>
-              <th>Tipo</th>
-              <th>Categoria</th>
-              <th>Valor</th>
-              <th></th>
-            </tr>
-          </thead>
+  <tr>
+    <th onClick={() => requestSort('desc')} style={{ cursor: 'pointer' }}>
+      Descrição {sortConfig.key === 'desc' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
+    </th>
+    <th>Tipo</th>
+    <th onClick={() => requestSort('category')} style={{ cursor: 'pointer' }}>
+      Categoria {sortConfig.key === 'category' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
+    </th>
+    <th onClick={() => requestSort('value')} style={{ cursor: 'pointer' }}>
+      Valor {sortConfig.key === 'value' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
+    </th>
+    <th></th>
+  </tr>
+</thead>
   <tbody>
-    {filtered.map(e => (
+  {sortedEntries.map(e => (
     <tr key={e.id}>
       <td>
         {editingId === e.id ? (
@@ -231,7 +283,10 @@ function exportToCSV() {
         ) : (
           <>
             <button className={styles.btnEdit} onClick={() => startEdit(e)}>✏️</button>
-            <button className={styles.btnRemove} onClick={() => removeEntry(e.id)}>×</button>
+            <button className={styles.btnRemove} onClick={() => {
+                  if (confirm(`Tem certeza que deseja excluir "${e.desc}"?`)) {
+                    removeEntry(e.id) }
+            }}>×</button>
           </>
         )}
       </td>
@@ -260,6 +315,34 @@ function exportToCSV() {
           </ResponsiveContainer>
         </div>
       </section>
+
+    {categoryData.length > 0 && (
+  <section className={styles.section}>
+    <h2 className={styles.sectionTitle}>Despesas por categoria — {filterMonth}</h2>
+    <div className={styles.chartCard}>
+      <ResponsiveContainer width="100%" height={300}>
+        <PieChart>
+          <Pie
+            data={categoryData}
+            cx="50%"
+            cy="50%"
+            labelLine={true}
+            label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+            outerRadius={100}
+            fill="#8884d8"
+            dataKey="value"
+          >
+            {categoryData.map((entry, index) => (
+              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+            ))}
+          </Pie>
+          <Tooltip formatter={(value) => fmt(value)} />
+          <Legend />
+        </PieChart>
+      </ResponsiveContainer>
+    </div>
+  </section>
+)}
 
       {totalIn > 0 && (
         <section className={styles.section}>
