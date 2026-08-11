@@ -11,11 +11,14 @@ app.use(cors({
 }));
 app.use(express.json());
 
-// Rotas
+// rotas
+const authRoutes = require('./routes/auth');
+app.use('/api/auth', authRoutes);
+
 const transactionsRoutes = require('./routes/transactions');
 app.use('/api/transactions', transactionsRoutes);
 
-// Rota de teste
+// rota de teste
 app.get('/health', (req, res) => {
   res.json({ status: 'OK', message: 'FinFreela API rodando!' });
 });
