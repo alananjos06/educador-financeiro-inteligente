@@ -10,7 +10,7 @@ export default function App() {
   const [tab, setTab] = useState('dashboard')
   const { user, loading, logout } = useAuth()
 
-   if (loading) {
+  if (loading) {
     return <div className={styles.app}>Carregando...</div>
   }
 
@@ -24,13 +24,10 @@ export default function App() {
 
   return (
     <div className={styles.app}>
-      <Header tab={tab} setTab={setTab} />
+      <Header tab={tab} setTab={setTab} user={user} onLogout={logout} />
       <main className={styles.main}>
         {tab === 'dashboard' ? <Dashboard /> : <Simulador />}
       </main>
-      <button onClick={logout} style={{ position: 'fixed', top: 10, right: 10 }}>
-        Sair
-      </button>
     </div>
   )
 }
