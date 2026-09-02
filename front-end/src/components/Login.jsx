@@ -3,6 +3,7 @@ import { useAuth } from '../hooks/useAuth'
 import styles from './Login.module.css'
 
 export function Login() {
+  const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -14,7 +15,7 @@ export function Login() {
     setError('')
     try {
       if (isRegistering) {
-        await register(email, password)
+        await register(name, email, password)
       } else {
         await login(email, password)
       }
@@ -31,12 +32,23 @@ export function Login() {
           {isRegistering ? 'Criar conta' : 'Entrar'}
         </h2>
         <form className={styles.form} onSubmit={handleSubmit}>
+          {isRegistering && (
+            <input
+              className={styles.input}
+              type="text"
+              placeholder="Nome completo"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+            />
+          )}
           <input
             className={styles.input}
             type="email"
             placeholder="E-mail"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            required
           />
           <input
             className={styles.input}
@@ -44,6 +56,7 @@ export function Login() {
             placeholder="Senha"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            required
           />
           <button className={styles.submit} type="submit">
             {isRegistering ? 'Cadastrar' : 'Entrar'}
@@ -52,7 +65,10 @@ export function Login() {
         {error && <p className={styles.error}>{error}</p>}
         <button
           className={styles.toggle}
-          onClick={() => setIsRegistering(!isRegistering)}
+          onClick={() => {
+            setIsRegistering(!isRegistering)
+            setError('')
+          }}
         >
           {isRegistering ? 'Já tenho conta' : 'Criar nova conta'}
         </button>

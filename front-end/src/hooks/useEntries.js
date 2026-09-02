@@ -1,29 +1,15 @@
 import { useState, useEffect } from 'react'
-import { db } from '../firebase'
-import {
-  collection,
-  getDocs,
-  addDoc,
-  deleteDoc,
-  updateDoc,
-  doc
-} from 'firebase/firestore'
-
-const COLLECTION_NAME = 'transactions'
+import { transactionService } from '../services/transactionService'
 
 export function useEntries() {
   const [entries, setEntries] = useState([])
   const [loading, setLoading] = useState(true)
 
-  // carrega transações do Firestore
+  // Carrega transações da API/PostgreSQL
   useEffect(() => {
     async function loadEntries() {
       try {
-        const querySnapshot = await getDocs(collection(db, COLLECTION_NAME))
-        const data = querySnapshot.docs.map(docSnap => ({
-          id: docSnap.id,
-          ...docSnap.data()
-        }))
+        const data = await transactionService.getAll()
         setEntries(data)
       } catch (error) {
         console.error('❌ Erro ao carregar transações:', error)
@@ -34,38 +20,32 @@ export function useEntries() {
     loadEntries()
   }, [])
 
-  // adiciona transação
+  // Adiciona transação
   async function addEntry(entry) {
     try {
-      const docRef = await addDoc(collection(db, COLLECTION_NAME), {
-        desc: entry.desc,
-        value: entry.value,
-        type: entry.type,
-        category: entry.category || 'Outros',
-        month: entry.month
-      })
-      setEntries(prev => [...prev, { id: docRef.id, ...entry }])
+      const newEntry = await transactionService.create(entry)
+      setEntries(prev => [...prev, newEntry])
     } catch (error) {
       console.error('❌ Erro ao adicionar transação:', error)
     }
   }
 
-  // remove transação
+  // Remove transação
   async function removeEntry(id) {
     try {
-      await deleteDoc(doc(db, COLLECTION_NAME, id))
+      await transactionService.remove(id)
       setEntries(prev => prev.filter(e => e.id !== id))
     } catch (error) {
       console.error('❌ Erro ao remover transação:', error)
     }
   }
 
-  // atualiza transação
+  // Atualiza transação
   async function updateEntry(id, updatedData) {
     try {
-      await updateDoc(doc(db, COLLECTION_NAME, id), updatedData)
+      const updated = await transactionService.update(id, updatedData)
       setEntries(prev => prev.map(entry =>
-        entry.id === id ? { ...entry, ...updatedData } : entry
+        entry.id === id ? { ...entry, ...updated } : entry
       ))
     } catch (error) {
       console.error('❌ Erro ao atualizar transação:', error)

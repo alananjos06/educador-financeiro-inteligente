@@ -1,35 +1,41 @@
-import { useState, useEffect } from 'react'
-import { auth } from '../firebase'
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  signOut,
-  onAuthStateChanged
-} from 'firebase/auth'
+import { useState, useEffect } from 'react';
+import { authService } from '../services/authService';
 
 export function useAuth() {
-  const [user, setUser] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser)
-      setLoading(false)
-    })
-    return () => unsubscribe()
-  }, [])
+    const token = localStorage.getItem('finfreela_token');
+    if (token) {
+      setUser({ token }); 
+    }
+    setLoading(false);
+  }, []);
 
-  async function register(email, password) {
-    return createUserWithEmailAndPassword(auth, email, password)
+  async function register(name, email, password) {
+    try {
+      const data = await authService.register(name, email, password);
+      return data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Erro ao criar conta.');
+    }
   }
 
   async function login(email, password) {
-    return signInWithEmailAndPassword(auth, email, password)
+    try {
+      const data = await authService.login(email, password);
+      setUser(data.user || { email });
+      return data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'E-mail ou senha inválidos.');
+    }
   }
 
   async function logout() {
-    return signOut(auth)
+    await authService.logout();
+    setUser(null);
   }
 
-  return { user, loading, register, login, logout }
+  return { user, loading, register, login, logout };
 }

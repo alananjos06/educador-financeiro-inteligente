@@ -4,79 +4,91 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const db = require('../db');
 
-const SALT_ROUNDS = 10;
-
-// POST /api/auth/register
-router.post('/register', (req, res) => {
+// POST - Cadastro de novo usuário
+router.post('/register', async (req, res) => {
   const { name, email, password } = req.body;
 
+  // Validação básica
   if (!name || !email || !password) {
-    return res.status(400).json({ error: 'name, email e password são obrigatórios' });
+    return res.status(400).json({ error: 'Preencha todos os campos obrigatórios.' });
   }
 
-  db.get('SELECT id FROM users WHERE email = ?', [email], (err, existingUser) => {
-    if (err) {
-      return res.status(500).json({ error: err.message });
-    }
-    if (existingUser) {
-      return res.status(409).json({ error: 'E-mail já cadastrado' });
-    }
+  try {
+    // Criptografa a senha usando bcrypt 
+    const salt = await bcrypt.genSalt(10);
+    const passwordHash = await bcrypt.hash(password, salt);
 
-    bcrypt.hash(password, SALT_ROUNDS, (err, hash) => {
-      if (err) {
-        return res.status(500).json({ error: 'Erro ao processar senha' });
-      }
+    // insere o usuário no PostgreSQL e retorna os dados públicos com RETURNING
+    const result = await db.query(
+      `INSERT INTO users (name, email, password_hash) 
+       VALUES ($1, $2, $3) 
+       RETURNING id, name, email, created_at`,
+      [name, email, passwordHash]
+    );
 
-      db.run(
-        'INSERT INTO users (name, email, password_hash) VALUES (?, ?, ?)',
-        [name, email, hash],
-        function (err) {
-          if (err) {
-            return res.status(500).json({ error: err.message });
-          }
+    const newUser = result.rows[0];
 
-          const token = jwt.sign({ id: this.lastID }, process.env.JWT_SECRET, { expiresIn: '7d' });
-          res.status(201).json({
-            user: { id: this.lastID, name, email },
-            token
-          });
-        }
-      );
+    // Gera o token no cadastro para o usuário logar direto
+    const token = jwt.sign({ id: newUser.id }, process.env.JWT_SECRET, { expiresIn: '7d' });
+
+    res.status(201).json({
+      message: 'Usuário cadastrado com sucesso!',
+      user: newUser,
+      token
     });
-  });
+
+  } catch (err) {
+    // Código '23505' no PostgreSQL indica violação de restrição UNIQUE (e-mail duplicado)
+    if (err.code === '23505') {
+      return res.status(400).json({ error: 'Este e-mail já está cadastrado.' });
+    }
+    console.error('Erro no registro:', err.message);
+    res.status(500).json({ error: 'Erro interno ao cadastrar usuário.' });
+  }
 });
 
-// POST /api/auth/login
-router.post('/login', (req, res) => {
+// POST - Login do usuário
+router.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    return res.status(400).json({ error: 'email e password são obrigatórios' });
+    return res.status(400).json({ error: 'Informe e-mail e senha.' });
   }
 
-  db.get('SELECT * FROM users WHERE email = ?', [email], (err, user) => {
-    if (err) {
-      return res.status(500).json({ error: err.message });
-    }
-    if (!user) {
-      return res.status(401).json({ error: 'Credenciais inválidas' });
+  try {
+    // Busca o usuário pelo e-mail
+    const result = await db.query('SELECT * FROM users WHERE email = $1', [email]);
+    
+    if (result.rows.length === 0) {
+      return res.status(401).json({ error: 'Credenciais inválidas.' });
     }
 
-    bcrypt.compare(password, user.password_hash, (err, match) => {
-      if (err) {
-        return res.status(500).json({ error: 'Erro ao verificar senha' });
-      }
-      if (!match) {
-        return res.status(401).json({ error: 'Credenciais inválidas' });
-      }
+    const user = result.rows[0];
 
-      const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '7d' });
-      res.json({
-        user: { id: user.id, name: user.name, email: user.email },
-        token
-      });
+    // Compara a senha enviada com a senha hash do banco
+    const match = await bcrypt.compare(password, user.password_hash);
+    
+    if (!match) {
+      return res.status(401).json({ error: 'Credenciais inválidas.' });
+    }
+
+    // Gera o Token JWT válido por 7 dias
+    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '7d' });
+    
+    res.json({
+      message: 'Login realizado com sucesso!',
+      user: { 
+        id: user.id, 
+        name: user.name, 
+        email: user.email 
+      },
+      token
     });
-  });
+
+  } catch (err) {
+    console.error('Erro no login:', err.message);
+    res.status(500).json({ error: 'Erro interno ao realizar login.' });
+  }
 });
 
 module.exports = router;
