@@ -8,7 +8,6 @@ const port = process.env.PORT || 3001;
 
 // Configuração de CORS flexível
 const allowedOrigins = [
-  'https://alananjos06.github.io',
   'http://localhost:5173',
   'http://localhost:3000',
   'https://front-end-eight-olive.vercel.app'
