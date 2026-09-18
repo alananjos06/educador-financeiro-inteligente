@@ -9,6 +9,8 @@ Aplicação web voltada para freelancers e pequenos empreendedores com renda var
 
 > ⚠️ O back-end roda em instância gratuita do Render, que "dorme" após 15 minutos de inatividade. A primeira requisição após um período ocioso pode levar até 50 segundos para responder.
 
+![Dashboard do FinFreela](./screenshots/dashboard.png)
+
 ---
 
 ## Arquitetura do projeto
