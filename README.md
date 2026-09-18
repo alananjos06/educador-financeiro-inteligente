@@ -1,4 +1,5 @@
 # FinFreela — Educador Financeiro Inteligente
+![CI](https://github.com/alananjos06/educador-financeiro-inteligente/actions/workflows/ci.yml/badge.svg)
 
 Aplicação web voltada para freelancers e pequenos empreendedores com renda variável, ajudando a organizar entradas, saídas e reserva financeira.
 
