@@ -22,6 +22,11 @@ describe('DELETE /api/transactions/:id', () => {
 
     expect(res.status).toBe(404);
     expect(res.body.error).toBeDefined();
+    // falha se a cláusula de propriedade sair da query real
+    expect(db.query).toHaveBeenCalledWith(
+      expect.stringContaining('user_id'),
+      expect.arrayContaining([1])
+    );
   });
 
   it('remove a transação do próprio usuário', async () => {
@@ -54,5 +59,10 @@ describe('PUT /api/transactions/:id', () => {
 
     expect(res.status).toBe(404);
     expect(res.body.error).toBeDefined();
+    // falha se a cláusula de propriedade sair da query real
+    expect(db.query).toHaveBeenCalledWith(
+      expect.stringContaining('user_id'),
+      expect.arrayContaining([1])
+    );
   });
 });
