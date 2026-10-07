@@ -4,12 +4,13 @@ import { useEntries } from '../hooks/useEntries.js'
 import { MONTHS, fmt, calcTotals, formatEixo } from '../utils.js'
 import styles from './Dashboard.module.css'
 
-const EMPTY_FORM = { desc: '', type: 'entrada', value: '', month: 'Mai', category: 'Projeto' }
+const MES_ATUAL = MONTHS[new Date().getMonth()] // getMonth() vai de 0 a 11, igual ao índice de MONTHS
+const EMPTY_FORM = { desc: '', type: 'entrada', value: '', month: MES_ATUAL, category: 'Projeto' }
 
 export default function Dashboard() {
   const { entries, addEntry, removeEntry, updateEntry, getByMonth, getUsedMonths } = useEntries()
   const [form, setForm] = useState(EMPTY_FORM)
-  const [filterMonth, setFilterMonth] = useState('Mai')
+  const [filterMonth, setFilterMonth] = useState(MES_ATUAL)
   const [editingId, setEditingId] = useState(null)
   const [editForm, setEditForm] = useState({ desc: '', value: '' })
   const CATEGORIES = ['Projeto', 'Fixo', 'Operacional', 'Marketing', 'Educação', 'Saúde', 'Alimentação', 'Transporte', 'Outros']
@@ -52,9 +53,9 @@ export default function Dashboard() {
 const COLORS = ['#c8ff00', '#ff6b35', '#7c6cff', '#00e5a0', '#ff4545', '#ffaa00', '#00b4d8', '#9b59b6', '#e83e8c']
 
   function handleAdd() {
-    if (!form.desc || !form.value) return
-    addEntry({ ...form, value: parseFloat(form.value) })
-    setForm(EMPTY_FORM)
+  if (!form.desc || !form.value) return
+  addEntry({ ...form, value: parseFloat(form.value) })
+  setForm({ ...EMPTY_FORM, month: filterMonth })
   }
 
   function startEdit(entry) {
@@ -156,7 +157,10 @@ function requestSort(key) {
           <button
             key={m}
             className={`${styles.monthBtn} ${filterMonth === m ? styles.active : ''}`}
-            onClick={() => setFilterMonth(m)}
+            onClick={() => { 
+            setFilterMonth(m) 
+            setForm(f => ({ ...f, month: m })) // formulário acompanha o mês aberto
+            }}
           >
             {m}
           </button>
