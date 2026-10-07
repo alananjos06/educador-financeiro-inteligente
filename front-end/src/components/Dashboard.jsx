@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend, PieChart, Pie, Cell } from 'recharts'
 import { useEntries } from '../hooks/useEntries.js'
-import { MONTHS, fmt, calcTotals } from '../utils.js'
+import { MONTHS, fmt, calcTotals, formatEixo } from '../utils.js'
 import styles from './Dashboard.module.css'
 
 const EMPTY_FORM = { desc: '', type: 'entrada', value: '', month: 'Mai', category: 'Projeto' }
@@ -310,7 +310,7 @@ function requestSort(key) {
             <BarChart data={chartData} barGap={4}>
               <CartesianGrid strokeDasharray="3 3" stroke="#ffffff08" />
               <XAxis dataKey="name" tick={{ fill: '#888', fontSize: 11, fontFamily: 'DM Mono' }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fill: '#888', fontSize: 10, fontFamily: 'DM Mono' }} axisLine={false} tickLine={false} tickFormatter={v => `${(v / 1000).toFixed(0)}k`} />
+              <YAxis tick={{ fill: '#888', fontSize: 10, fontFamily: 'DM Mono' }} axisLine={false} tickLine={false} tickFormatter={formatEixo} />
               <Tooltip contentStyle={{ background: '#18181f', border: '1px solid #ffffff12', borderRadius: 8, fontFamily: 'DM Mono', fontSize: 12 }} formatter={v => fmt(v)} />
               <Legend wrapperStyle={{ fontSize: 11, fontFamily: 'DM Mono' }} />
               <Bar dataKey="Entradas" fill="#00e5a0" radius={[4, 4, 0, 0]} />

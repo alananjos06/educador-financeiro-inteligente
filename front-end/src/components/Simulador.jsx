@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from 'recharts'
-import { MONTHS, fmt } from '../utils.js'
+import { fmt, MONTHS, formatEixo } from '../utils.js'
 import styles from './Simulador.module.css'
 
 export default function Simulador() {
@@ -108,7 +108,7 @@ export default function Simulador() {
             <LineChart data={chartData}>
               <CartesianGrid strokeDasharray="3 3" stroke="#ffffff08" />
               <XAxis dataKey="name" tick={{ fill: '#888', fontSize: 11, fontFamily: 'DM Mono' }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fill: '#888', fontSize: 10, fontFamily: 'DM Mono' }} axisLine={false} tickLine={false} tickFormatter={v => `${(v / 1000).toFixed(1)}k`} />
+              <YAxis tick={{ fill: '#888', fontSize: 10, fontFamily: 'DM Mono' }} axisLine={false} tickLine={false} tickFormatter={formatEixo} />
               <Tooltip contentStyle={{ background: '#18181f', border: '1px solid #ffffff12', borderRadius: 8, fontFamily: 'DM Mono', fontSize: 12 }} formatter={v => fmt(v)} />
               <Legend wrapperStyle={{ fontSize: 11, fontFamily: 'DM Mono' }} />
               <Line type="monotone" dataKey="Reserva" stroke="#7c6cff" strokeWidth={2} dot={false} />

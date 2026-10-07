@@ -18,3 +18,10 @@ export function calcTotals(entries) {
 
   return { totalIn, totalOut, balance: totalIn - totalOut }
 }
+
+export function formatEixo(v) {
+  if (Math.abs(v) < 1000) {
+    return Math.round(v).toLocaleString('pt-BR') // abaixo de mil mostra inteiro
+  }
+  return `${(v / 1000).toLocaleString('pt-BR', { maximumFractionDigits: 1 })}k` // vírgula decimal
+}
