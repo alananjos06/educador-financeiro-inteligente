@@ -153,13 +153,13 @@ function requestSort(key) {
     </div>
 
       <div className={styles.monthSelector}>
-        {MONTHS.filter(m => usedMonths.includes(m)).map(m => (
+       {MONTHS.filter(m => usedMonths.includes(m) || m === MES_ATUAL).map(m => (
           <button
             key={m}
             className={`${styles.monthBtn} ${filterMonth === m ? styles.active : ''}`}
             onClick={() => { 
             setFilterMonth(m) 
-            setForm(f => ({ ...f, month: m })) // formulário acompanha o mês aberto
+            setForm(f => ({ ...f, month: m }))
             }}
           >
             {m}
@@ -170,7 +170,7 @@ function requestSort(key) {
       <div className={styles.statsGrid}>
         {[
           { label: 'Receita bruta', value: fmt(totalIn), cls: 'positive', sub: `${filterMonth} ${new Date().getFullYear()}` },
-          { label: 'Despesas', value: fmt(totalOut), cls: 'negative', sub: `${filtered.filter(e => e.type === 'saída').length} lançamentos` },
+          { label: 'Despesas', value: fmt(totalOut), cls: 'negative', sub: `${filtered.filter(e => e.type === 'saída').length} saídas` },
           { label: 'Saldo líquido', value: fmt(balance), cls: balance >= 0 ? 'positive' : 'negative', sub: balance >= 0 ? '✓ positivo' : '⚠ negativo' },
           { label: 'Pró-labore sugerido', value: fmt(proLabore), cls: 'accent', sub: '40% da receita' },
         ].map(({ label, value, cls, sub }) => (
