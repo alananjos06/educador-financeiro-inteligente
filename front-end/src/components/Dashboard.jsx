@@ -354,10 +354,10 @@ function requestSort(key) {
           <div className={styles.card}>
             <div className={styles.resultBlock} style={{ borderColor: 'var(--accent3)' }}>
               {[
-                { label: '🧾 Impostos (25%)', value: fmt(impostos), cls: 'danger' },
-                { label: '🏦 Reserva de segurança (10%)', value: fmt(reserva), cls: 'purple' },
-                { label: '💼 Reinvestimento no negócio (35%)', value: fmt(totalIn * 0.35), cls: 'orange' },
-                { label: '✅ Pró-labore (30%)', value: fmt(proLabore), cls: 'accent' },
+                { label: 'Impostos (15%)', value: fmt(impostos), cls: 'danger' },
+                { label: 'Reserva de segurança (10%)', value: fmt(reserva), cls: 'purple' },
+                { label: 'Reinvestimento no negócio (35%)', value: fmt(totalIn * 0.35), cls: 'orange' },
+                { label: 'Pró-labore (40%)', value: fmt(proLabore), cls: 'accent' },
               ].map(({ label, value, cls }) => (
                 <div key={label} className={styles.resultRow}>
                   <span className={styles.resultKey}>{label}</span>
