@@ -338,6 +338,7 @@ function requestSort(key) {
             outerRadius={100}
             fill="#8884d8"
             dataKey="value"
+            stroke="none"
           >
             {categoryData.map((entry, index) => (
               <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
