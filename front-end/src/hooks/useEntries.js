@@ -12,7 +12,7 @@ export function useEntries() {
         const data = await transactionService.getAll()
         setEntries(data)
       } catch (error) {
-        console.error('❌ Erro ao carregar transações:', error)
+        console.error('Erro ao carregar transações:', error)
       } finally {
         setLoading(false)
       }
@@ -26,7 +26,7 @@ export function useEntries() {
       const newEntry = await transactionService.create(entry)
       setEntries(prev => [...prev, newEntry])
     } catch (error) {
-      console.error('❌ Erro ao adicionar transação:', error)
+      console.error('Erro ao adicionar transação:', error)
     }
   }
 
@@ -36,7 +36,7 @@ export function useEntries() {
       await transactionService.remove(id)
       setEntries(prev => prev.filter(e => e.id !== id))
     } catch (error) {
-      console.error('❌ Erro ao remover transação:', error)
+      console.error('Erro ao remover transação:', error)
     }
   }
 
@@ -48,7 +48,7 @@ export function useEntries() {
         entry.id === id ? { ...entry, ...updated } : entry
       ))
     } catch (error) {
-      console.error('❌ Erro ao atualizar transação:', error)
+      console.error('Erro ao atualizar transação:', error)
     }
   }
 

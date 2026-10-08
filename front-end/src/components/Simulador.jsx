@@ -24,10 +24,10 @@ export default function Simulador() {
 
   const alertType = !saudavel ? 'warn' : restante > receita * 0.2 ? 'ok' : 'info'
   const alertMsg = !saudavel
-    ? `⚠️ Saldo para o negócio negativo (${fmt(restante)}). Reduza o pró-labore ou revise despesas.`
+    ? `Saldo para o negócio negativo (${fmt(restante)}). Reduza o pró-labore ou revise despesas.`
     : restante > receita * 0.2
-    ? `✅ Distribuição saudável! Você ainda tem ${fmt(restante)} para reinvestir.`
-    : `ℹ️ Distribuição apertada. Saldo de ${fmt(restante)} para o negócio.`
+    ? `Distribuição saudável! Você ainda tem ${fmt(restante)} para reinvestir.`
+    : `Distribuição apertada. Saldo de ${fmt(restante)} para o negócio.`
 
   return (
     <div>

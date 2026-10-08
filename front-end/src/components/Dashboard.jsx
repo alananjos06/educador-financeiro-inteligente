@@ -171,7 +171,7 @@ function requestSort(key) {
         {[
           { label: 'Receita bruta', value: fmt(totalIn), cls: 'positive', sub: `${filterMonth} ${new Date().getFullYear()}` },
           { label: 'Despesas', value: fmt(totalOut), cls: 'negative', sub: `${filtered.filter(e => e.type === 'saída').length} saídas` },
-          { label: 'Saldo líquido', value: fmt(balance), cls: balance >= 0 ? 'positive' : 'negative', sub: balance >= 0 ? '✓ positivo' : '⚠ negativo' },
+          { label: 'Saldo líquido', value: fmt(balance), cls: balance >= 0 ? 'positive' : 'negative', sub: balance >= 0 ? '✓ positivo' : '✗ negativo' },
           { label: 'Pró-labore sugerido', value: fmt(proLabore), cls: 'accent', sub: '40% da receita' },
         ].map(({ label, value, cls, sub }) => (
           <div key={label} className={styles.statCard}>
@@ -222,15 +222,14 @@ function requestSort(key) {
   <div className={styles.sectionHeader}>
     <h2 className={styles.sectionTitle}>Lançamentos — {filterMonth}</h2>
     <button className={styles.btnExport} onClick={exportToCSV}>
-      📥 Exportar CSV
+      Exportar CSV
     </button>
   </div>
   <div className={styles.card}>
     {filtered.length === 0 ? (
-      <div className={styles.empty}>
-        <span>📭</span>
-        <p>Nenhum lançamento em {filterMonth}.</p>
-      </div>
+        <div className={styles.empty}>
+          <p>Nenhum lançamento em {filterMonth}.</p>
+        </div>
     ) : (
       <div className={styles.tableWrap}>
         <table>
@@ -290,7 +289,7 @@ function requestSort(key) {
           </>
         ) : (
           <>
-            <button className={styles.btnEdit} onClick={() => startEdit(e)}>✏️</button>
+            <button className={styles.btnEdit} onClick={() => startEdit(e)}>✎</button>
             <button className={styles.btnRemove} onClick={() => {
                   if (confirm(`Tem certeza que deseja excluir "${e.desc}"?`)) {
                     removeEntry(e.id) }
